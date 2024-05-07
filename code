@@ -1,0 +1,41 @@
+import numpy as np
+import pandas as pd
+
+
+def calculate_presence_points(filename, start_row, start_col):
+    # Load the Excel file
+    data = pd.read_excel(filename, header=None)
+
+    # Extract the relevant part of the DataFrame using the starting row and column indices
+    presence_data = data.iloc[start_row:, start_col:]
+
+    # Convert DataFrame to a NumPy array for easier manipulation
+    presence_array = presence_data.to_numpy()
+
+    # Initialize a list to hold the points for each person
+    points = []
+
+    # Iterate over each person (row in the array)
+    for person in presence_array:
+        person_points = 0
+        consecutive_days = 0
+
+        # Count consecutive days of presence
+        for day in person:
+            if day == 1:
+                consecutive_days += 1
+            else:
+                # If there is a break in presence, calculate points and reset counter
+                person_points += consecutive_days // 7
+                consecutive_days = 0
+
+        # Add points for the last streak of presence if needed
+        person_points += consecutive_days // 7
+
+        # Append the calculated points to the points list
+        points.append(person_points)
+
+    # Output the points for each person
+    for index, p in enumerate(points):
+        print(f"Person {index + start_row}: {p} points")
+
